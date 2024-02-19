@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+  rust-container:
+    build:
+      context: ../server 
+      dockerfile: Dockerfile
+      target: develop-stage
+    container_name: rust-container
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../server:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    tty: true
+    restart: always
+    depends_on:
+      - db
+    env_file: 
+      ../.env
+    command: sh -c "cargo watch -x run -w src"
+    networks:
+      - app-network
+
+  typescript-container:
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+    container_name: typescript-container
+    tty: true
+    restart: always
+    depends_on:
+      - db
+    env_file: 
+      ../.env
+    volumes:
+      - ../client:/app
+    ports:
+      - "8080:8080"
+    command: sh -c "npm run client"
+    networks:
+      - app-network
+
+  db:
+    container_name: postgres-container
+    image: postgres:14
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: app
+    restart: always
+    tty: true
+    ports:
+      - '5433:5432'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
+    driver: bridge
+
+volumes:
+  cargo-cache:
+  target-cache:
+  postgres-data:

@@ -70,7 +70,7 @@ Knowledgeは現在CRUD（登録・更新・削除・取得）のみ実装して�
 
 ---
 
-## Local Development
+## ローカル開発
 
 ### 起動
 
@@ -82,7 +82,7 @@ docker compose --profile debug up
 
 ---
 
-## Environment
+## 環境設定
 
 ### frontend/.env
 
@@ -98,7 +98,7 @@ OPENAI_API_KEY=
 
 ---
 
-## 技術アピールポイント
+## 技術ポイント
 
 - App Router設計
 - JWT認証 + Guardパターン

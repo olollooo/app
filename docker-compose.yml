@@ -1,0 +1,62 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: app_frontend
+    volumes:
+      - ./frontend:/app
+      - ./wasm/pkg:/app/public/wasm
+    ports:
+      - "3000:3000"
+    env_file:
+      - frontend/.env
+    networks:
+      - application_net
+    working_dir: /app
+    command: pnpm run dev
+    profiles: ["dev"]
+
+  backend:
+    build: ./backend
+    container_name: app_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "4000:4000"
+    env_file:
+      - backend/.env
+    networks:
+      - application_net
+    working_dir: /app
+    command: sh -c "pnpm prisma generate && pnpm start:dev"
+    profiles: ["dev"]
+
+  backend-debug:
+    build: ./backend
+    container_name: app_backend_debug
+    volumes:
+      - ./backend:/app
+    ports:
+      - "4000:4000"
+      - "9229:9229"
+    networks:
+      - application_net
+    env_file:
+      - backend/.env
+    working_dir: /app
+    command: sh -c "pnpm prisma generate && pnpm start:debug"
+    profiles: ["debug"]
+
+  wasm:
+    build: ./wasm
+    container_name: app_wasm
+    volumes:
+      - ./wasm:/code
+      - ./frontend/src/wasm:/out
+    working_dir: /code
+    networks:
+      - application_net
+    command: cargo watch -s "wasm-pack build --target web --out-dir /out"
+    profiles: ["dev"]
+
+networks:
+  application_net:

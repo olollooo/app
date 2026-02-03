@@ -25,7 +25,7 @@ Next.js (Frontend) → NestJS (API) → Supabase (Auth/DB)
 
 ## フロントエンド
 
-- Next.js 14 (App Router)
+- Next.js 16 (App Router)
 - TypeScript
 - TailwindCSS
 - SWR

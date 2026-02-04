@@ -7,7 +7,7 @@ import { AiSectionsSchema } from "./schemas/aiSections.schema";
 @Injectable()
 export class ChatService {
   logger: any;
-  constructor(private readonly openai: OpenAIService) {}
+  constructor(private readonly openai: OpenAIService) { }
 
   async run(messages: ChatMessageDto[]) {
     const systemPrompt = this.buildSystemPrompt();
@@ -22,82 +22,42 @@ export class ChatService {
   }
 
   private buildSystemPrompt() {
-  return `
-  You are a senior backend engineer and software architect.
+    return `
+    You are a senior backend engineer and software architect.
 
-  Your mission is not only to review the design, but to deliberately break the user's assumptions,
-  then reconstruct them into a robust and production-ready solution.
+    Your task is to perform technical design reviews based strictly on engineering reasoning.
+    Do NOT provide emotional criticism.
 
-  You must behave like a strict technical reviewer.
+    # Objective
+    Identify:
+    - design weaknesses
+    - wrong assumptions
+    - production risks
+    Then propose practical and implementable improvements.
 
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-  OUTPUT FORMAT (STRICT)
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Output Rules (STRICT)
+    - Output ONLY valid JSON
+    - NO explanations before or after
+    - Follow the exact schema
+    - Use \\n for line breaks
+    - Do NOT break JSON syntax
+    - Include concrete implementation code when necessary
+    - Wrap code blocks using language-specified markdown fences
+    - The response language MUST be Japanese (except JSON syntax and code)
 
-  You MUST output ONLY valid JSON.
-  Do NOT output markdown outside JSON.
-  Do NOT add explanations outside JSON.
-  Do NOT wrap the entire response with code fences.
-
-  The response MUST strictly match:
-
-  {
-    "rebuttal": string,
-    "improve": string,
-    "reason": string,
-    "risk": string
-  }
-
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-  CRITICAL RULE FOR CODE
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Inside the "improve" field:
-
-  - Every code example MUST be wrapped in Markdown code fences
-  - ALWAYS use triple backticks
-  - ALWAYS specify language (ts)
-  - NEVER output plain text code
-  - NEVER omit the language
-
-  Correct example:
-
-  \`\`\`ts
-  @Injectable()
-  export class UserService {
-    findAll() {
-      return [];
+    # JSON Schema
+    {
+      "rebuttal": string,
+      "improve": string,
+      "reason": string,
+      "risk": string
     }
-  }
-  \`\`\`
 
-  If you output code without fences, the answer is invalid.
-
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-  CONTENT REQUIREMENTS
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  You must:
-
-  - Aggressively challenge assumptions
-  - Identify concrete technical risks
-  - Provide a concrete redesign
-  - Provide implementation approach
-  - Provide TypeScript/NestJS code
-  - Explain engineering reasoning
-
-  Risk section rules:
-
-  - Write natural Japanese sentences only
-  - No numbers
-  - No bullet points
-  - No symbols
-  - No tables
-
-  Language: Japanese only.
-
-  Return JSON only.
-  `;
+    # Requirements
+    - Challenge assumptions
+    - Focus on production operations
+    - No abstract or vague advice
+    `;
   }
 
 
@@ -112,8 +72,7 @@ export class ChatService {
     let parsed: unknown;
 
     try {
-      const jsonText = this.extractJsonBlock(text);
-      parsed = JSON.parse(jsonText);
+      parsed = JSON.parse(text);
     } catch (e) {
       this.logger?.warn?.("AI JSON parse failed", { text });
 
@@ -150,14 +109,4 @@ export class ChatService {
       risk: data.risk ?? defaultSections.risk,
     };
   }
-  private extractJsonBlock(text: string): string {
-    const first = text.indexOf("{");
-    const last = text.lastIndexOf("}");
-    if (first === -1 || last === -1 || last <= first) {
-      throw new Error("No JSON object found in text");
-    }
-    return text.slice(first, last + 1);
-  }
-  
-
 }

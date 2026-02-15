@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+
 import { NextResponse } from "next/server";
 import { superbaseRouteClient } from "../../../../lib/superbase/superbase-route";
 import { logger } from '../../../../lib/logs/logger';

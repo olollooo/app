@@ -15,21 +15,9 @@ export function ChatMessage({ message, onSave }: Props) {
   if (isUser) {
     return (
       <div className="flex justify-start px-2 mb-2">
-  <div className="max-w-full sm:max-w-[80%] rounded-2xl shadow bg-sky-600 text-white overflow-x-auto">
-    <pre className="whitespace-pre font-mono text-sm m-0 px-4 py-2">
-      {message.content}
-    </pre>
-  </div>
-</div>
-    );
-  }
-
-  if (!message.sections) {
-    return (
-      <div className="flex justify-start">
-        <div className="max-w-[80%] px-4 py-2 rounded-2xl shadow bg-red-900 text-red-100">
-          <pre className="whitespace-pre-wrap break-words font-mono text-sm">
-            {"構造化されていない応答です。再度試行してください。"}
+        <div className="max-w-full sm:max-w-[80%] rounded-2xl shadow bg-sky-600 text-white overflow-x-auto">
+          <pre className="whitespace-pre font-mono text-sm m-0 px-4 py-2">
+            {message.content}
           </pre>
         </div>
       </div>

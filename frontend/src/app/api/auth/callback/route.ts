@@ -2,7 +2,6 @@ export const runtime = 'nodejs';
 
 import { NextResponse } from "next/server";
 import { superbaseRouteClient } from "../../../../lib/superbase/superbase-route";
-import { logger } from '../../../../lib/logs/logger';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -19,7 +18,7 @@ export async function GET(request: Request) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    logger.error({ error }, 'superbase exchangeCodeForSession failed');
+    console.error('superbase exchangeCodeForSession failed', { error });
     return NextResponse.redirect(new URL("/login", url.origin));
   }
 

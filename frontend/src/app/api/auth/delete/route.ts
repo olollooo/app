@@ -3,7 +3,6 @@ export const runtime = 'nodejs';
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { superbaseRouteClient } from "../../../../lib/superbase/superbase-route";
-import { logger } from '../../../../lib/logs/logger';
 
 export async function DELETE() {
   const response = NextResponse.json({});
@@ -32,7 +31,7 @@ export async function DELETE() {
       await supabaseAdmin.auth.admin.deleteUser(user.id);
 
     if (deleteError) {
-      logger.error({ error }, 'superbase deleteUser');
+      console.error('superbase deleteUser', { error });
       return NextResponse.json(
         { code: "DELETE_FAILED", message: "Failed to delete user" },
         { status: 500 }
@@ -43,7 +42,7 @@ export async function DELETE() {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    logger.error({ err }, 'superbase signOut failed');
+    console.error('superbase signOut failed', { err });
     return NextResponse.json(
       { code: "INTERNAL_ERROR", message: "Internal Server Error" },
       { status: 500 }

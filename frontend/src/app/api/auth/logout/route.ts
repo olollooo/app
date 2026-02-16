@@ -2,7 +2,6 @@ export const runtime = 'nodejs';
 
 import { NextResponse } from "next/server";
 import { superbaseRouteClient } from "../../../../lib/superbase/superbase-route";
-import { logger } from "../../../../lib/logs/logger";
 
 export async function POST() {
   try {
@@ -13,7 +12,7 @@ export async function POST() {
 
     return response;
   } catch (err) {
-    logger.error({ err }, 'superbase signOut failed');
+    console.error('superbase signOut failed', { err });
 
     return NextResponse.json(
       { code: "INTERNAL_ERROR", message: "Internal Server Error" },
